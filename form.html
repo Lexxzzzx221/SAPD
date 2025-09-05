@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Generator - BBCode</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-link" id="nav-home">Home</a>
+    <a href="list.html" class="nav-link" id="nav-list">BBCode List</a>
+  </nav>
+
+  <div class="container">
+    <h1 id="form-title">Form Generator</h1>
+    <form id="dynamic-form"></form>
+
+    <h2>Hasil BBCode</h2>
+    <textarea id="bbcode-output" rows="18"></textarea>
+    <button type="button" onclick="copyOutput()">Copy BBCode</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
