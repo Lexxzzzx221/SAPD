@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="en" data-bs-theme="auto">
+  <head>
+    <title>SAPD Penal Tool</title>
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
+
+
+  </head>
+  <body class="bg-body-tertiary">
+
+    <script>
+    // Cek apakah user sudah memasukkan password benar di sesi ini
+      var pass = prompt("🔒 Secure Login \n Masukkan password untuk melanjutkan.");
+      if (pass !== "legasigacor"){
+        window.location.href = "index.html";
+      }
+  </script>
+          <!-- Navbar -->
+  <!-- Navbar -->
+    <nav class="navbar">
+    <ul>
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="list.html" class="nav-link">BBCode Civil</a></li>
+        <li><a href="sapd.html" class="nav-link">BBCode Sapd</a></li>
+        <li><a href="sapd.html" class="nav-link active">Penal Code</a></li>
+    </ul>
+    </nav>
+
+
+<div class="container">
+  <main>
+    <div class="py-5 text-center">
+      <h2>SAPD Penal Tool</h2>
+      <p class="lead">"Fear None, Protect All"</p>
+    </div>
+
+    <div class="row g-5">
+      <div>
+        <form class="row gy-1 gx-1 align-items-center">
+          <div class="col-auto">
+            <label class="visually-hidden" for="suspectid">Suspect ID</label>
+            <input type="text" class="form-control" id="suspectid" placeholder="Suspect ID">
+          </div>
+          <div class="col-auto">
+            <button type="button" class="btn btn-sm btn-light">Apply</button>
+          </div>
+            <table id="violate-select" class="table" style="font-size: 0.9em;"">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Violation</th>
+                  <th scope="col">Jailtime</th>
+                  <th scope="col">Fine</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody class="align-middle">
+              </tbody>
+              <tfoot>
+               <tr>
+                 <th>#</th>
+                 <th>Violation</th>
+                 <th>Jailtime</th>
+                 <th>Fine</th>
+                 <th>Action</th>
+               </tr>
+           </tfoot>
+            </table>
+            <h4>_________________________________________________________________________________________________________________</h4>
+            <h4>Arrest</h4>
+            <div class="input-group mb-3">
+              <input type="text" id="arrest" class="form-control" aria-label="Amount (to the nearest dollar)" value="/arrest 0 0 0" disabled>
+              <span class="input-group-text"><button type="button" id="copyarrest" class="btn btn-sm btn-info">Copy</button></span>
+            </div>
+<h4>Charges</h4>
+<div id="individual-charges-container" class="mb-3">
+  </div>
+<h4>Tickets</h4>
+<div id="individual-tickets-container" class="mb-3">
+  </div>
+
+            <div class="col-12 mt-3">
+                <input type="text" id="violationSearchInput" class="form-control" placeholder="Cari nomor pelanggaran (pisahkan dengan koma, misal: 1A1,2D,3A)">
+            </div>
+
+            <table class="table table-stripped" id="violate-data" style="font-size: 0.9em;">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Violation</th>
+                  <th>Jailtime</th>
+                  <th>Fine</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody class="align-middle">
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>#</th>
+                  <th>Violation</th>
+                  <th>Jailtime</th>
+                  <th>Fine</th>
+                  <th>Action</th>
+                </tr>
+            </tfoot>
+            </table>
+          </div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+  $(document).ready(function() {
+
+        /**
+         * Fungsi untuk menyalin teks ke clipboard.
+         * @param {string} text - Teks yang akan disalin.
+         */
+        function copyToClipboard(text) {
+            var textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed'; // Mengatur posisi tetap agar tidak mengganggu tata letak
+            document.body.appendChild(textarea);
+            textarea.select(); // Memilih teks di dalam textarea
+            document.execCommand('copy'); // Menyalin teks ke clipboard
+            document.body.removeChild(textarea); // Menghapus textarea setelah disalin
+        }
+
+        // --- Event Listener untuk Tombol Copy Utama ---
+        $('#copyarrest').click(function () {
+            copyToClipboard($('#arrest').val());
+        });
+
+        $('#copytickets').click(function () {
+            copyToClipboard($('#tickets').val());
+        });
+
+        $('#copycharges').click(function () {
+            copyToClipboard($('#charges').val());
+        });
+        // --- Akhir Event Listener untuk Tombol Copy Utama ---
+
+
+      let suspectid = 0;
+      let jailtime = 0;
+      let fine = 0;
+      let maxjailtime = 500;
+      let maxfine = 50000;
+      let selectedChargesData = []; // Array untuk menyimpan detail biaya yang dipilih (selalu /su)
+      let selectedTicketsData = []; // Array untuk menyimpan detail tiket yang dipilih (selalu /ticket)
+
+      let jsonData = [
+            {
+               code: "1A1",
+               name: "General Traffic Violation",
+               jailtime: "0",
+               fine: "250"
+            },
+            {
+               code: "1A2",
+               name: "Failure to pay any issued ticket",
+               jailtime: "15",
+               fine: "65"
+            },
+            {
+               code: "1A3",
+               name: "Driving any motorized vehicle without an official driving license",
+               jailtime: "15",
+               fine: "100"
+            },
+            {
+               code: "1A4",
+               name: "Maneuver any sea vehicles without official sailing licenses",
+               jailtime: "15",
+               fine: "100"
+            },
+            {
+               code: "1A5a",
+               name: "Driving any heavy truck without official trucking licenses",
+               jailtime: "30",
+               fine: "1500"
+            },
+            {
+               code: "1A5b",
+               name: "Driving any lorry truck without official trucking licenses",
+               jailtime: "30",
+               fine: "500"
+            },
+            {
+               code: "1A6a",
+               name: "Truck driving in any federal roads, in any inappropriate path, and without any permission from officers before",
+               jailtime: "30",
+               fine: "2000"
+            },
+            {
+               code: "1A6b",
+               name: "Lorry driving in any federal roads, in any inappropriate path, and without any permission from officers before",
+               jailtime: "30",
+               fine: "200"
+            },
+            {
+               code: "1A7",
+               name: "Flying any air vehicles without official flying licenses as a pilot",
+               jailtime: "35",
+               fine: "2250"
+            },
+            {
+               code: "1A8",
+               name: "Speeding",
+               jailtime: "0",
+               fine: "1000"
+            },
+            {
+               code: "1A9",
+               name: "Vehicle Parking Violation",
+               jailtime: "0",
+               fine: "450"
+            },  
+            {
+               code: "1A10",
+               name: "Illegal Modifications On Vehicles",
+               jailtime: "0",
+               fine: "500"
+            },
+            {
+               code: "1A11",
+               name: "Unregistered Vehicles",
+               jailtime: "0",
+               fine: "250"
+            },
+            {
+               code: "1A12",
+               name: "Vehicular Endangerment",
+               jailtime: "30",
+               fine: "3000"
+            },
+            {
+               code: "1A13",
+               name: "Vehicular Manslaughter",
+               jailtime: "40",
+               fine: "450",
+            },
+            {
+               code: "1A14",
+               name: "DWI or DUI",
+               jailtime: "15",
+               fine: "300"
+            },
+            {
+               code: "1A15",
+               name: "Illegal Street Racing",
+               jailtime: "25",
+               fine: "350"
+            },
+            {
+               code: "1A16",
+               name: "Evading From Police",
+               jailtime: "20",
+               fine: "250"
+            },
+            {
+               code: "1A17",
+               name: "Flight Regulations",
+               jailtime: "0",
+               fine: "450"
+            },
+            {
+               code: "1A18",
+               name: "Misbehavely Maneuvering / Operating an Aircraft / Aircraft Endangerment",
+               jailtime: "50",
+               fine: "750"
+            },
+            {
+               code: "1S",
+               name: "Emergency Landing",
+               jailtime: "0",
+               fine: "400"
+            },
+            {
+               code: "1T",
+               name: "Failure to Yield to Emergency Vehicles",
+               jailtime: "0",
+               fine: "250"
+            },
+            {
+               code: "1U",
+               name: "Failure to Yield to A Roadblock",
+               jailtime: "0",
+               fine: "200"
+            },
+            {
+               code: "1V",
+               name: "Following An Emergency Vehicle",
+               jailtime: "0",
+               fine: "300"
+            },
+            {
+               code: "1W",
+               name: "Altering or Changing a Vehicle Identification Number",
+               jailtime: "20",
+               fine: "100"
+            },
+            {
+               code: "2D",
+               name: "Lumberjack License",
+               jailtime: "25",
+               fine: "2000"
+            },
+            {
+               code: "2F",
+               name: "Organizing a Small Illegal Event",
+               jailtime: "25",
+               fine: "5000"
+            },
+            {
+               code: "2G",
+               name: "Organizing a Big Illegal Event",
+               jailtime: "35",
+               fine: "7500"
+            },
+            {
+               code: "3A",
+               name: "Possessing of Marijuana / Pots (Small Amount)",
+               jailtime: "5",
+               fine: "400"
+            },
+            {
+               code: "3B",
+               name: "Possessing of Marijuana / Pots (Large Amount)",
+               jailtime: "5",
+               fine: "1200"
+            },
+            {
+               code: "3C",
+               name: "Possessing of Cocaine / Crack (Small Amount)",
+               jailtime: "20",
+               fine: "375"
+            },
+            {
+               code: "3D",
+               name: "Possessing of Cocaine / Crack (Large Amount)",
+               jailtime: "25",
+               fine: "750"
+            },
+            {
+               code: "3E",
+               name: "IUI or IWI",
+               jailtime: "15",
+               fine: "150"
+            },
+            {
+               code: "3F",
+               name: "Selling or distributing of illegal drugs",
+               jailtime: "25",
+               fine: "500"
+            },
+            {
+               code: "3G",
+               name: "Drug Manufacturing",
+               jailtime: "35",
+               fine: "500"
+            },
+            {
+               code: "3H",
+               name: "Being Present for Illegal Drug Use",
+               jailtime: "10",
+               fine: "100"
+            },
+            {
+               code: "4A",
+               name: "Possessing, Showing, And Display Any Usages of Sharp / Blunt Weapons",
+               jailtime: "15",
+               fine: "150"
+            },
+            {
+               code: "4B",
+               name: "Possessing of Illegal Firearms",
+               jailtime: "40",
+               fine: "500"
+            },
+            {
+               code: "4C",
+               name: "Possessing of Legal Firearms Without Official Firearms License",
+               jailtime: "20",
+               fine: "50"
+            },
+            {
+               code: "4D",
+               name: "Possessing Any Kind of Weapon Materials or Schematics",
+               jailtime: "25",
+               fine: "500"
+            },
+            {
+               code: "4F",
+               name: "Brandishing a Firearm or Weapon",
+               jailtime: "20",
+               fine: "200"
+            },
+            {
+               code: "4G",
+               name: "Unlawful Discharge of a Firearm or Weapon",
+               jailtime: "25",
+               fine: "200"
+            },
+            {
+               code: "4H",
+               name: "Possession of a Body Armor",
+               jailtime: "10",
+               fine: "400"
+            },
+            {
+               code: "4I",
+               name: "Weapon Trafficking",
+               jailtime: "30",
+               fine: "400"
+            },
+            {
+               code: "4J",
+               name: "Possessing Destructive Devices or Explosives",
+               jailtime: "35",
+               fine: "350"
+            },
+            {
+               code: "5A",
+               name: "Intimidation",
+               jailtime: "10",
+               fine: "50"
+            },
+            {
+               code: "5B",
+               name: "Assault",
+               jailtime: "15",
+               fine: "100"
+            },
+            {
+               code: "5C",
+               name: "Assault with Deadly Weapons",
+               jailtime: "20",
+               fine: "150"
+            },
+            {
+               code: "5D",
+               name: "Battery",
+               jailtime: "25",
+               fine: "200"
+            },
+            {
+               code: "5E",
+               name: "Aggravated Battery",
+               jailtime: "30",
+               fine: "250"
+            },
+            {
+               code: "5F",
+               name: "Attempted Murdering",
+               jailtime: "30",
+               fine: "200"
+            },
+            {
+               code: "5G",
+               name: "Murdering",
+               jailtime: "50",
+               fine: "400"
+            },
+            {
+               code: "5H",
+               name: "Committed a group criminal assault with or without weapons",
+               jailtime: "30",
+               fine: "250"
+            },
+            {
+               code: "5I",
+               name: "Performing A Drive-By Using Light or Heavy Fire Arms",
+               jailtime: "35",
+               fine: "300"
+            },
+            {
+               code: "5J",
+               name: "Melee Robbery",
+               jailtime: "15",
+               fine: "100"
+            },
+            {
+               code: "5K",
+               name: "Armed Robbery",
+               jailtime: "30",
+               fine: "150"
+            },
+            {
+               code: "5L",
+               name: "Piracy",
+               jailtime: "20",
+               fine: "150"
+            },
+            {
+               code: "5M",
+               name: "Grand Theft",
+               jailtime: "25",
+               fine: "250"
+            },
+            {
+               code: "5N",
+               name: "Grand Theft Auto",
+               jailtime: "15",
+               fine: "250"
+            },
+            {
+               code: "5O",
+               name: "Grand Theft of Firearms",
+               jailtime: "15",
+               fine: "100"
+            },
+            {
+               code: "5P",
+               name: "Abuse or Desecration of Dead Human Body",
+               jailtime: "15",
+               fine: "200"
+            },
+            {
+               code: "5Q",
+               name: "Kidnapping",
+               jailtime: "30",
+               fine: "350"
+            },
+            {
+               code: "5R",
+               name: "Hostage Taking",
+               jailtime: "60",
+               fine: "250"
+            },
+            {
+               code: "5S",
+               name: "Torture",
+               jailtime: "20",
+               fine: "150"
+            },
+            {
+               code: "5T",
+               name: "Blackmail",
+               jailtime: "10",
+               fine: "100"
+            },
+            {
+               code: "5U",
+               name: "Human Trafficking",
+               jailtime: "65",
+               fine: "550"
+            },
+            {
+               code: "6A",
+               name: "Sexual Harassment",
+               jailtime: "10",
+               fine: "500"
+            },
+            {
+               code: "6B",
+               name: "Rape",
+               jailtime: "60",
+               fine: "300"
+            },
+            {
+               code: "6C",
+               name: "Statutory Rape",
+               jailtime: "75",
+               fine: "500"
+            },
+            {
+               code: "6D",
+               name: "Prostitution",
+               jailtime: "30",
+               fine: "250"
+            },
+            {
+               code: "6E",
+               name: "Solicitation of Sexual Engagement",
+               jailtime: "30",
+               fine: "250"
+            },
+            {
+               code: "6F",
+               name: "Being Naked In Public",
+               jailtime: "5",
+               fine: "50"
+            },
+            {
+               code: "6G",
+               name: "Performs Any Sexual Action in Public",
+               jailtime: "15",
+               fine: "150"
+            },
+            {
+               code: "7A",
+               name: "Initiating A Riot",
+               jailtime: "15",
+               fine: "200"
+            },
+            {
+               code: "7B",
+               name: "Failing to Disperse After Lawfully Ordered by The Officials",
+               jailtime: "20",
+               fine: "250"
+            },
+            {
+               code: "7C",
+               name: "Participating in a Riot",
+               jailtime: "10",
+               fine: "75"
+            },
+            {
+               code: "7D",
+               name: "Spitting in Public Space",
+               jailtime: "0",
+               fine: "150"
+            },
+            {
+               code: "7E",
+               name: "Pee in Public",
+               jailtime: "0",
+               fine: "150"
+            },
+            {
+               code: "7F",
+               name: "Drunk in Public Space",
+               jailtime: "0",
+               fine: "200"
+            },
+            {
+               code: "7G",
+               name: "Vilification",
+               jailtime: "15",
+               fine: "100"
+            },
+            {
+               code: "7H",
+               name: "Hate Speech",
+               jailtime: "20",
+               fine: "150"
+            },
+            {
+               code: "7I",
+               name: "Vigilantism",
+               jailtime: "30",
+               fine: "300"
+            },
+            {
+               code: "7J",
+               name: "Disturbing Public Peace",
+               jailtime: "15",
+               fine: "100"
+            },
+            {
+               code: "7K",
+               name: "Brawl in Public Space",
+               jailtime: "20",
+               fine: "150"
+            },
+            {
+               code: "7M",
+               name: "Jaywalk",
+               jailtime: "0",
+               fine: "50"
+            },
+            {
+               code: "7N",
+               name: "Littering the Public Facility / Space",
+               jailtime: "0",
+               fine: "250"
+            },
+            {
+               code: "7O",
+               name: "Unlawful Assembly",
+               jailtime: "20",
+               fine: "100"
+            },
+            {
+               code: "7P",
+               name: "Stalking",
+               jailtime: "20",
+               fine: "200"
+            },
+            {
+               code: "7Q",
+               name: "Public Intoxication",
+               jailtime: "10",
+               fine: "250"
+            },
+            {
+               code: "7R",
+               name: "Animal Abuse",
+               jailtime: "20",
+               fine: "500"
+            },
+            {
+               code: "7S",
+               name: "Animal Cruelty",
+               jailtime: "0",
+               fine: "300"
+            },
+            {
+               code: "8A",
+               name: "Obstruction of Justice",
+               jailtime: "15",
+               fine: "30"
+            },
+            {
+               code: "8B",
+               name: "Abusing Government Hotline",
+               jailtime: "10",
+               fine: "100"
+            },
+            {
+               code: "8C",
+               name: "Governments Attribute",
+               jailtime: "60",
+               fine: "100"
+            },
+            {
+               code: "8D",
+               name: "Impersonating Government Staff",
+               jailtime: "60",
+               fine: "100"
+            },
+            {
+               code: "8E",
+               name: "Attempting to Bribe or Corrupt Any Public Officials",
+               jailtime: "15",
+               fine: "200"
+            },
+            {
+               code: "8F",
+               name: "Attempting to bribe, corrupt or prevent any crime’s witnesses to step out and give out information to law enforcers",
+               jailtime: "10",
+               fine: "60"
+            },
+            {
+               code: "8G",
+               name: "Making a False Report",
+               jailtime: "20",
+               fine: "200"
+            },
+            {
+               code: "8H",
+               name: "Giving False Information to the Police Officials",
+               jailtime: "20",
+               fine: "125"
+            },
+            {
+               code: "8I",
+               name: "Perjury",
+               jailtime: "20",
+               fine: "500"
+            },
+            {
+               code: "8J",
+               name: "Assaulting on LEO",
+               jailtime: "40",
+               fine: "150"
+            },
+            {
+               code: "8K",
+               name: "Attempted Murdering A Public Officials",
+               jailtime: "60",
+               fine: "500"
+            },
+            {
+               code: "8L",
+               name: "Murdering A Public Officials",
+               jailtime: "70",
+               fine: "600"
+            },
+            {
+               code: "8M",
+               name: "Harbouring Criminals",
+               jailtime: "30",
+               fine: "250"
+            },
+            {
+               code: "8N",
+               name: "Fraud / Scam",
+               jailtime: "20",
+               fine: "250"
+            },
+            {
+               code: "8O",
+               name: "Forgery",
+               jailtime: "30",
+               fine: "500"
+            },
+            {
+               code: "8P",
+               name: "Corruption",
+               jailtime: "300",
+               fine: "5000"
+            },
+            {
+               code: "9A",
+               name: "Trespassing",
+               jailtime: "5",
+               fine: "300"
+            },
+            {
+               code: "9B",
+               name: "Trespassing Government Property",
+               jailtime: "20",
+               fine: "100"
+            },
+            {
+               code: "9C",
+               name: "Vandalism",
+               jailtime: "15",
+               fine: "250"
+            },
+            {
+               code: "9D",
+               name: "Arson",
+               jailtime: "30",
+               fine: "250"
+            },
+            {
+               code: "9E",
+               name: "Extortion",
+               jailtime: "20",
+               fine: "150"
+            },
+            {
+               code: "9F",
+               name: "Using Property As Illegal Distribution",
+               jailtime: "60",
+               fine: "300"
+            }
+         ];
+        var tableBody = $("#violate-data tbody");
+
+        /**
+         * Fungsi untuk mengisi tabel data pelanggaran.
+         */
+        $.each(jsonData, function(index, charge) {
+          var row = $("<tr></tr>");
+          row.append($("<td></td>").text(charge.code));
+          row.append($("<td></td>").text(charge.name));
+          row.append($("<td></td>").text(charge.jailtime));
+          row.append($("<td></td>").text(charge.fine));
+          var button = $("<td></td>");
+          var convertcharge = 'item-' + charge.code.replace(/[ .]/g, function(match) {
+          return match === ' ' ? '-' : '';
+          });
+
+          button.append($('<button type="button" class="btn btn-sm btn-success">Add</button>').attr('id', convertcharge).attr('code', charge.code));
+          row.append(button);
+
+          tableBody.append(row);
+        });
+        
+        /**
+         * Inisialisasi DataTable untuk #violate-data.
+         */
+        $('#violate-data').DataTable({
+            "order": [[0, "asc"]],
+            "paging": false,
+            responsive: true,
+            "searching": false
+        });
+
+        /**
+         * Inisialisasi DataTable untuk #violate-select.
+         */
+        var dataselect = new DataTable('#violate-select', {
+           "order": [[0, "asc"]],
+           "paging": false,
+           responsive: true
+        });
+
+        /**
+         * Fungsi utama untuk memperbarui semua detail penangkapan, biaya, dan tiket.
+         */
+        function updateArrestDetails() {
+            jailtime = 0;
+            fine = 0;
+            selectedChargesData = []; // Bersihkan data biaya yang dipilih sebelumnya
+            selectedTicketsData = []; // Bersihkan data tiket yang dipilih sebelumnya
+
+            dataselect.rows().data().each(function (value) {
+                let chargeCode = value[0];
+                let chargeName = value[1];
+                let chargeJailtime = parseInt(value[2], 10);
+                let chargeFine = parseInt(value[3], 10);
+
+                jailtime += chargeJailtime;
+                fine += chargeFine;
+
+                // Untuk bagian 'Charges' (biaya individual), selalu gunakan /su
+                let chargeCommand = `/su ${suspectid} ${chargeCode}. ${chargeName}`;
+                
+                selectedChargesData.push({
+                    code: chargeCode,
+                    name: chargeName,
+                    jailtime: chargeJailtime, // Tetap simpan jailtime
+                    fine: chargeFine, // Tetap simpan fine
+                    command: chargeCommand
+                });
+
+                // Untuk bagian 'Tickets' (tiket individual), selalu gunakan /ticket jika jailtime 0
+                if (chargeJailtime === 0) {
+                    let ticketCommand = `/ticket ${suspectid} ${chargeFine} ${chargeCode}. ${chargeName}`;
+                    selectedTicketsData.push({
+                        code: chargeCode,
+                        name: chargeName,
+                        jailtime: chargeJailtime,
+                        fine: chargeFine,
+                        command: ticketCommand
+                    });
+                }
+            });
+
+            // Perbarui Jailtime dan Fine dengan batas maksimum
+            const finalJailtime = jailtime < maxjailtime ? jailtime : maxjailtime;
+            const finalFine = fine < maxfine ? fine : maxfine;
+
+            $('#arrest').val(`/arrest ${suspectid} ${finalJailtime} ${finalFine}`);
+            
+            // Panggil fungsi untuk merender tabel biaya individual
+            renderIndividualCharges();
+            // Panggil fungsi untuk merender tabel tiket individual
+            renderIndividualTickets();
+            // Panggil fungsi untuk memperbarui textarea gabungan
+            updateAllChargesAndTicketsTextareas();
+        }
+
+        /**
+         * Fungsi untuk merender baris biaya individual yang dapat disalin.
+         */
+        function renderIndividualCharges() {
+            const chargesContainer = $('#individual-charges-container');
+            chargesContainer.empty(); // Bersihkan biaya individual sebelumnya
+
+            if (selectedChargesData.length === 0) {
+                chargesContainer.append('<p class="text-muted">There is No Charges Selected.</p>');
+                return;
+            }
+
+            selectedChargesData.forEach(charge => {
+                const chargeHtml = `
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">${charge.code} - ${charge.name}:</span>
+                        <input type="text" class="form-control" value="${charge.command}" readonly>
+                        <span class="input-group-text">
+                            <button type="button" class="btn btn-sm btn-info copy-individual-charge" data-command="${charge.command}">Copy</button>
+                        </span>
+                    </div>
+                `;
+                chargesContainer.append(chargeHtml);
+            });
+
+            // Lampirkan event click untuk tombol copy yang baru dibuat
+            $('.copy-individual-charge').off('click').on('click', function() {
+                const commandToCopy = $(this).data('command');
+                copyToClipboard(commandToCopy);
+            });
+        }
+
+        /**
+         * Fungsi untuk merender baris tiket individual yang dapat disalin.
+         */
+        function renderIndividualTickets() {
+            const ticketsContainer = $('#individual-tickets-container');
+            ticketsContainer.empty(); // Bersihkan tiket individual sebelumnya
+
+            if (selectedTicketsData.length === 0) {
+                ticketsContainer.append('<p class="text-muted">There is no ticket selected (charges with 0 jailtime).</p>');
+                return;
+            }
+
+            selectedTicketsData.forEach(ticket => {
+                const ticketHtml = `
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">${ticket.code} - ${ticket.name}:</span>
+                        <input type="text" class="form-control" value="${ticket.command}" readonly>
+                        <span class="input-group-text">
+                            <button type="button" class="btn btn-sm btn-info copy-individual-ticket" data-command="${ticket.command}">Copy</button>
+                        </span>
+                    </div>
+                `;
+                ticketsContainer.append(ticketHtml);
+            });
+
+            // Lampirkan event click untuk tombol copy yang baru dibuat
+            $('.copy-individual-ticket').off('click').on('click', function() {
+                const commandToCopy = $(this).data('command');
+                copyToClipboard(commandToCopy);
+            });
+        }
+
+        /**
+         * Fungsi untuk memperbarui textarea charges dan tickets gabungan.
+         */
+        function updateAllChargesAndTicketsTextareas() {
+            let currentChargesCombined = [];
+            let currentTicketsCombined = [];
+
+            // Untuk textarea 'charges', gabungkan semua perintah dari selectedChargesData (yang selalu /su)
+            if (selectedChargesData.length === 0) {
+                currentChargesCombined.push(`/su ${suspectid} 0`);
+            } else {
+                selectedChargesData.forEach(charge => {
+                    currentChargesCombined.push(charge.command);
+                });
+            }
+
+            // Untuk textarea 'tickets', gabungkan semua perintah dari selectedTicketsData (yang selalu /ticket)
+            if (selectedTicketsData.length === 0) {
+                currentTicketsCombined.push(`/ticket ${suspectid} 0 0`);
+            } else {
+                selectedTicketsData.forEach(ticket => {
+                    currentTicketsCombined.push(ticket.command);
+                });
+            }
+            
+            $('#charges').val(currentChargesCombined.join('\n'));
+            $('#tickets').val(currentTicketsCombined.join('\n'));
+        }
+
+        /**
+         * Fungsi pencarian kustom untuk beberapa kode pelanggaran.
+         */
+        $('#violationSearchInput').on('keyup', function() {
+            var searchTerms = this.value.trim().toUpperCase();
+            var termsArray = searchTerms.split(',').map(term => term.trim()).filter(term => term !== '');
+
+            var tableRows = $('#violate-data tbody tr');
+
+            tableRows.each(function() {
+                var row = $(this);
+                var codeCell = row.find('td').eq(0);
+                if (codeCell.length > 0) {
+                    var rowCode = codeCell.text().toUpperCase();
+                    var match = false;
+
+                    if (termsArray.length === 0) {
+                        match = true;
+                    } else {
+                        for (var i = 0; i < termsArray.length; i++) {
+                            if (rowCode === termsArray[i]) {
+                                match = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (match) {
+                        row.show();
+                    } else {
+                        row.hide();
+                    }
+                }
+            });
+        });
+
+        // --- Event Listener untuk Tombol Add/Remove Violations ---
+        $('.btn-success').click(function () {
+            let result = jsonData.filter(x=> x.code == $(this).attr("code"));
+            $(this).prop("disabled", true);
+            
+            $.each(result, function(index, charge) {
+              dataselect.row
+              .add([charge.code, charge.name, charge.jailtime, charge.fine, 
+                    `<button type="button" class="btn btn-sm btn-danger" code="${charge.code}">Remove</button>`])
+              .draw();
+            });
+            updateArrestDetails(); // Panggil setelah menambahkan pelanggaran
+        });
+
+        $('#violate-select').on('click', '.btn-danger', function () {
+            let removedCode = $(this).attr("code");
+            dataselect
+            .row($(this).parents('tr'))
+            .remove()
+            .draw();
+            
+            // Aktifkan kembali tombol "Add" untuk item yang dihapus di tabel violate-data
+            $(`button[code="${removedCode}"].btn-success`).prop("disabled", false);
+            
+            updateArrestDetails(); // Panggil setelah menghapus pelanggaran
+        });
+        // --- Akhir Event Listener untuk Tombol Add/Remove Violations ---
+
+        /**
+         * Event Listener untuk tombol "Apply" suspect ID.
+         */
+        $('.btn-light').click(function () {
+          suspectid = $('#suspectid').val();
+          updateArrestDetails(); // Panggil ketika ID tersangka berubah
+        });
+        
+        // Panggil updateArrestDetails saat dokumen siap untuk inisialisasi awal
+        // Ini memastikan nilai default tampil bahkan tanpa input atau add/remove pertama kali.
+        updateArrestDetails();
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</html>

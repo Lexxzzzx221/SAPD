@@ -66,7 +66,78 @@ document.addEventListener("DOMContentLoaded", () => {
       <label>Your Name: <input type="text" id="name1"></label><br>
       <button type="button" onclick="generatePending()">Generate BBCode</button>
     `;
-  } 
+  } else if (template === "Denied") {
+    title.textContent = "Respon Denied";
+    formContainer.innerHTML = `
+      <label>Full Name User: <input type="text" id="name"></label><br>
+      <label>Mr/Ms: <input type="text" id="mrorms"></label><br>
+      <label>Reasons:</label><textarea id="reasons"></textarea><br>
+      <label>Your Signature: <input type="text" id="signature"></label><br>
+      <label>Your Rank: <input type="text" id="rank"></label><br>
+      <label>Your Name: <input type="text" id="name1"></label><br>
+      <button type="button" onclick="generatePending()">Generate BBCode</button>
+    `;
+  } else if (template === "Paid") {
+    title.textContent = "Respon Paid";
+    formContainer.innerHTML = `
+      <label>Enter valid until here: <input type="text" id="valid"></label><br>
+      <button type="button" onclick="generatePaid()">Generate BBCode</button>
+    `;
+  } else if (template === "Expired") {
+    title.textContent = "Respon Expired";
+    formContainer.innerHTML = `
+      <label>Enter the expired date: <input type="text" id="expired"></label><br>
+      <button type="button" onclick="generateExpired()">Generate BBCode</button>
+    `;
+  } else if (template === "Accept1") {
+    title.textContent = "Respon Accept";
+    formContainer.innerHTML = `
+      <label>Full Name User: <input type="text" id="name"></label><br>
+      <label>Mr/Ms: <input type="text" id="mrorms"></label><br>
+      <label>Your Signature: <input type="text" id="signature"></label><br>
+      <label>Your Rank: <input type="text" id="rank"></label><br>
+      <label>Your Name: <input type="text" id="name1"></label><br>
+      <button type="button" onclick="generateAccept1()">Generate BBCode</button>
+    `;
+  }  else if (template === "Pending1") {
+    title.textContent = "Respon Pending";
+    formContainer.innerHTML = `
+      <label>Full Name User: <input type="text" id="name"></label><br>
+      <label>Mr/Ms: <input type="text" id="mrorms"></label><br>
+      <label>Reasons:</label><textarea id="reasons"></textarea><br>
+      <label>Your Signature: <input type="text" id="signature"></label><br>
+      <label>Your Rank: <input type="text" id="rank"></label><br>
+      <label>Your Name: <input type="text" id="name1"></label><br>
+      <button type="button" onclick="generatePending1()">Generate BBCode</button>
+    `;
+  } else if (template === "Denied1") {
+    title.textContent = "Respon Denied";
+    formContainer.innerHTML = `
+      <label>Full Name User: <input type="text" id="name"></label><br>
+      <label>Mr/Ms: <input type="text" id="mrorms"></label><br>
+      <label>Reasons:</label><textarea id="reasons"></textarea><br>
+      <label>Your Signature: <input type="text" id="signature"></label><br>
+      <label>Your Rank: <input type="text" id="rank"></label><br>
+      <label>Your Name: <input type="text" id="name1"></label><br>
+      <button type="button" onclick="generatePending1()">Generate BBCode</button>
+    `;
+  } else if (template === "Checking") {
+    title.textContent = "Respon Checking Result";
+    formContainer.innerHTML = `
+      <label>Full Name User: <input type="text" id="name"></label><br>
+      <label>Date of Birth: <input type="text" id="dob"></label><br>
+      <label>Place of Birth: <input type="text" id="pob"></label><br>
+      <label>Gender: <input type="text" id="gender"></label><br>
+      <label>Current Adress: <input type="text" id="adress"></label><br>
+      <label>Certificate Number: <input type="text" id="certificate"></label><br>
+      <label>Valid From: <input type="text" id="validf"></label><br>
+      <label>Valid To: <input type="text" id="validt"></label><br>
+      <label>Your Signature: <input type="text" id="signature"></label><br>
+      <label>Your Rank: <input type="text" id="rank"></label><br>
+      <label>Your Name: <input type="text" id="name1"></label><br></br>
+      <button type="button" onclick="generateChecking()">Generate BBCode</button>
+    `;
+  }
 });
 
 // Fungsi generate applicant
@@ -187,7 +258,7 @@ Los Santos, ${ttl}
 [/divbox]`;
 }
 
-// Fungsi generate Pending
+// Fungsi generate Accept
 function generateAccept() {
   const name = document.getElementById("name").value;
   const mrorms = document.getElementById("mrorms").value;
@@ -249,6 +320,203 @@ Sincerely,
 [b]${rank}[/b], ${name1}[/divbox]`;
 }
 
+// Fungsi generate Denied
+function generateDenied() {
+  const name = document.getElementById("name").value;
+  const mrorms = document.getElementById("mrorms").value;
+  const reasonsInput = document.getElementById("reasons").value;
+  const signature = document.getElementById("signature").value;
+  const rank = document.getElementById("rank").value;
+  const name1 = document.getElementById("name1").value;
+  
+  const reasons = formatReasons(reasonsInput);
+
+  document.getElementById("bbcode-output").value = `[divbox=white][center][img-resize=193]https://i.imgur.com/HfiJgbV.png[/img-resize]  [img-resize=200]https://i.imgur.com/gEdaiX7.png[/img-resize][/center]
+[center][size=150][b]Compliance & Development Bureau - Regulatory Licensing 
+& Enforcement Unit Division[/b][/size][/center]
+[hr]
+[divbox=#0000BF][center][size=100][b][color=#FFFFFF]Trucking License[/color][/b][/size][/center][/divbox]
+
+Dear ${mrorms} ${name},
+
+We have received your application and after further review, and after careful consideration, we would like to inform you that your application has been [color=#FF0000][b]DENIED[/b][/color] for the following reasons:
+
+[b]Reason(s):[/b]
+${reasons}
+
+[b]Note(s):[/b]
+[list]
+[*]You can create a new thread if you want this license
+[/list]
+
+
+Sincerely,
+[img]${signature}[/img]
+[b]${rank}[/b], ${name1}[/divbox]`;
+}
+
+// Fungsi generate Paid
+function generatePaid() {
+  const valid = document.getElementById("valid").value;
+
+  document.getElementById("bbcode-output").value = `[divbox=WHITE]
+[center][SIZE=200][b][color=#00BF00]PAID[/color][/b][/SIZE][/center][/divbox]
+[divbox=white]
+[center][SIZE=100][b]VALID UNTIL ${valid}[/b][/SIZE][/center]
+[/divbox]`;
+}
+
+// Fungsi generate Expired
+function generateExpired() {
+  const expired = document.getElementById("expired").value;
+
+  document.getElementById("bbcode-output").value = `[divbox=WHITE]
+[center][SIZE=200][b][color=RED]EXPIRED[/color][/b][/SIZE][/center][/divbox]
+[divbox=white]
+[center][SIZE=100][b]We will archive your topic after the date ${expired} has passed.[/b][/SIZE][/center]
+[/divbox]`;
+}
+
+// Fungsi generate Accept CGC
+function generateAccept1() {
+  const name = document.getElementById("name").value;
+  const mrorms = document.getElementById("mrorms").value;
+  const signature = document.getElementById("signature").value;
+  const rank = document.getElementById("rank").value;
+  const name1 = document.getElementById("name1").value;
+
+  document.getElementById("bbcode-output").value = `[divbox=white][center][img-resize=193]https://i.imgur.com/HfiJgbV.png[/img-resize]  [img-resize=200]https://i.imgur.com/gEdaiX7.png[/img-resize][/center]
+[center][size=150][b]Compliance & Development Bureau - Regulatory Licensing 
+& Enforcement Unit Division[/b][/size][/center]
+[hr]
+[divbox=#0000BF][center][size=100][b][color=#FFFFFF]Certificate of Good Conduct[/color][/b][/size][/center][/divbox]
+
+Dear ${mrorms} ${name},
+
+We have reviewed your application and records, and after much consideration, we would like to inform you that your application has been [b][color=#00BF00]ACCEPTED[/color][/b]. However, this is not the final step. You are required to pay the administration fee in advance by visiting one of our head offices when we are [url=https://sapd.legacyrealityproject.com/viewtopic.php?p=184#p184]available[/url].
+
+[b]Note(s):[/b]
+[list]
+[*]You have 7 days to complete the administration. [url=https://sapd.legacyrealityproject.com/viewtopic.php?p=184#p184]RLE Hours[/url].[/list]
+
+
+Sincerely,
+[img]${signature}[/img]
+[b]${rank}[/b], ${name1}[/divbox]`;
+}
+
+// Fungsi generate Pending
+function generatePending1() {
+  const name = document.getElementById("name").value;
+  const mrorms = document.getElementById("mrorms").value;
+  const reasonsInput = document.getElementById("reasons").value;
+  const signature = document.getElementById("signature").value;
+  const rank = document.getElementById("rank").value;
+  const name1 = document.getElementById("name1").value;
+  
+  const reasons = formatReasons(reasonsInput);
+
+  document.getElementById("bbcode-output").value = `[divbox=white][center][img-resize=193]https://i.imgur.com/HfiJgbV.png[/img-resize]  [img-resize=200]https://i.imgur.com/gEdaiX7.png[/img-resize][/center]
+[center][size=150][b]Compliance & Development Bureau - Regulatory Licensing 
+& Enforcement Unit Division[/b][/size][/center]
+[hr]
+[divbox=#0000BF][center][size=100][b][color=#FFFFFF]Certificate of Good Conduct[/color][/b][/size][/center][/divbox]
+
+Dear ${mrorms} ${name},
+
+We have received your application and after further review, and after much consideration, we would like to inform you that your application has entered the [b][color=#FF8000]PENDING[/color][/b] stage for the following reasons:
+
+[b]Reason(s):[/b]
+${reasons}
+
+[b]Note(s):[/b]
+[list]
+[*]You have 7 days to correct this
+[/list]
+
+Sincerely,
+[img]${signature}[/img]
+[b]${rank}[/b], ${name1}[/divbox]`;
+}
+
+// Fungsi generate Denied
+function generateDenied1() {
+  const name = document.getElementById("name").value;
+  const mrorms = document.getElementById("mrorms").value;
+  const reasonsInput = document.getElementById("reasons").value;
+  const signature = document.getElementById("signature").value;
+  const rank = document.getElementById("rank").value;
+  const name1 = document.getElementById("name1").value;
+  
+  const reasons = formatReasons(reasonsInput);
+
+  document.getElementById("bbcode-output").value = `[divbox=white][center][img-resize=193]https://i.imgur.com/HfiJgbV.png[/img-resize]  [img-resize=200]https://i.imgur.com/gEdaiX7.png[/img-resize][/center]
+[center][size=150][b]Compliance & Development Bureau - Regulatory Licensing 
+& Enforcement Unit Division[/b][/size][/center]
+[hr]
+[divbox=#0000BF][center][size=100][b][color=#FFFFFF]Certificate of Good Conduct[/color][/b][/size][/center][/divbox]
+
+Dear ${mrorms} ${name},
+
+We have received your application and after further review, and after careful consideration, we would like to inform you that your application has been [color=#FF0000][b]DENIED[/b][/color] for the following reasons:
+
+[b]Reason(s):[/b]
+${reasons}
+
+[b]Note(s):[/b]
+[list]
+[*]You can create a new thread if you want this license
+[/list]
+
+
+Sincerely,
+[img]${signature}[/img]
+[b]${rank}[/b], ${name1}[/divbox]`;
+}
+
+// Fungsi generate Denied
+function generateChecking() {
+  const name = document.getElementById("name").value;
+  const dob = document.getElementById("dob").value;
+  const pob = document.getElementById("pob").value;
+  const gender = document.getElementById("gender").value;
+  const adress = document.getElementById("adress").value;
+  const certificate = document.getElementById("certificate").value;
+  const validf = document.getElementById("validf").value;
+  const validt = document.getElementById("validt").value;
+  const signature = document.getElementById("signature").value;
+  const rank = document.getElementById("rank").value;
+  const name1 = document.getElementById("name1").value;
+
+  document.getElementById("bbcode-output").value = `[divbox=white][center][img-resize=193]https://i.imgur.com/HfiJgbV.png[/img-resize]  [img-resize=200]https://i.imgur.com/gEdaiX7.png[/img-resize][/center]
+[center][size=150][b]Compliance & Development Bureau - Regulatory Licensing 
+& Enforcement Unit Division[/b][/size][/center]
+[hr]
+[divbox=#0000BF][center][size=100][b][color=#FFFFFF]Applicant Information[/color][/b][/size][/center][/divbox]
+
+[list]
+[*][b]Full name:[/b] ${name}
+[*][b]Date of Birth:[/b] ${dob}
+[*][b]Place of Birth:[/b] ${pob}
+[*][b]Gender:[/b] ${gender}
+[*][b]Current Address:[/b] ${adress}
+[/list]
+[divbox=#0000BF][center][size=100][b][color=#FFFFFF]Checking Result[/color][/b][/size][/center][/divbox]
+
+Based on the MDC examination that has been carried out on the person with the information above, it is stated that the person with the information above is [b]clear from any criminal record[/b] during his life in the state of San Andreas.
+
+[divbox=#0000BF][center][size=100][b][color=#FFFFFF]Checking Result[/color][/b][/size][/center][/divbox]
+
+[list]
+[*][b]Certificate Number:[/b] ${certificate}
+[*][b]Valid From:[/b] ${validf}
+[*][b]Valid To:[/b] ${validt}
+[/list]
+
+Sincerely,
+[img]${signature}[/img]
+[b]${rank}[/b], ${name1}[/divbox]`;
+}
 
 function copyOutput() {
   let textarea = document.getElementById("bbcode-output");
@@ -267,4 +535,12 @@ function formatReasons(inputText) {
       .map(r => "[*] " + r)          // tambahkan bullet BBCode
       .join("\n") + 
     "\n[/list]";
+}
+
+function copyCommand() {
+  const cmd = document.getElementById("commandText");
+  cmd.select();
+  cmd.setSelectionRange(0, 99999); // for mobile
+  navigator.clipboard.writeText(cmd.value);
+  alert("Command copied: " + cmd.value);
 }

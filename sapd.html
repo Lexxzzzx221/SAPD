@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <script>
+    <script>
     if (sessionStorage.getItem("authenticated") !== "true") {
         window.location.href = "login.html";
     } else {
@@ -17,31 +17,82 @@
     </script>
 
   <!-- Navbar -->
-  <nav class="navbar">
-    <a href="index.html" class="nav-link" id="nav-home">Home</a>
-    <a href="list.html" class="nav-link" id="nav-list">BBCode Civil</a>
-    <a href="sapd.html" class="nav-link" id="nav-sapd">BBcode Sapd</a>
-  </nav>
+   <nav class="navbar">
+    <ul>
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="list.html" class="nav-link">BBCode Civil</a></li>
+        <li><a href="sapd.html" class="nav-link active">BBCode Sapd</a></li>
+        <li><a href="penalcode.html" class="nav-link">Penal Code</a></li>
+    </ul>
+    </nav>
 
   <div class="container">
-    <h1>Pilih Template BBCode</h1>
+    <h1>Pilih Template Untuk Respon Lisensi</h1>
     <p>Pilih salah satu template untuk mulai generate BBCode:</p>
 
     <div class="template-list">
       <div class="template-card">
-        <h3>Reply Accepted</h3>
+        <h3>Accepted</h3>
         <p>Reply Accepted.</p>
         <a href="form.html?template=Accept" class="btn-main">Gunakan Template</a>
       </div>
 
       <div class="template-card">
-        <h3>Reply Pending</h3>
+        <h3>Pending</h3>
         <p>Reply Pending.</p>
         <a href="form.html?template=Pending" class="btn-main">Gunakan Template</a>
+      </div>
+
+      <div class="template-card">
+        <h3>Denied</h3>
+        <p>Reply Denied.</p>
+        <a href="form.html?template=Denied" class="btn-main">Gunakan Template</a>
+      </div>
+
+      <div class="template-card">
+        <h3>Paid</h3>
+        <p>Reply Paid.</p>
+        <a href="form.html?template=Paid" class="btn-main">Gunakan Template</a>
+      </div>
+
+      <div class="template-card">
+        <h3>Expired</h3>
+        <p>Reply Expired.</p>
+        <a href="form.html?template=Expired" class="btn-main">Gunakan Template</a>
       </div>
     </div>
   </div>
 
+  <div class="container">
+    <h1>Pilih Template Untuk Respon Certificate of Good Conduct</h1>
+    <p>Pilih salah satu template untuk mulai generate BBCode:</p>
+
+    <div class="template-list">
+      <div class="template-card">
+        <h3>Accepted</h3>
+        <p>Reply Accepted CGC.</p>
+        <a href="form.html?template=Accept1" class="btn-main">Gunakan Template</a>
+      </div>
+
+      <div class="template-card">
+        <h3>Pending</h3>
+        <p>Reply Pending CGC.</p>
+        <a href="form.html?template=Pending1" class="btn-main">Gunakan Template</a>
+      </div>
+
+      <div class="template-card">
+        <h3>Denied</h3>
+        <p>Reply Denied CGC.</p>
+        <a href="form.html?template=Denied1" class="btn-main">Gunakan Template</a>
+      </div>
+
+      <div class="template-card">
+        <h3>Checking Result</h3>
+        <p>Reply Checking Result.</p>
+        <a href="form.html?template=Checking" class="btn-main">Gunakan Template</a>
+      </div>
+   </div>
+   
   <script src="script.js"></script>
 </body>
 </html>
