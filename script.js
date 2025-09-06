@@ -20,13 +20,13 @@ document.addEventListener("DOMContentLoaded", () => {
   if (template === "applicant") {
     title.textContent = "LICENSES HEAVY/LORY/LUMBER";
     formContainer.innerHTML = `
-      <label>Full Name: <input type="text" id="fullname"></label><br>
-      <label>Gender: <input type="text" id="gender"></label><br>
-      <label>Date of Birth: <input type="text" id="dob"></label><br>
-      <label>Residential Address: <input type="text" id="address"></label><br>
-      <label>Contact Number: <input type="text" id="phone"></label><br>
-      <label>License Image Link: <input type="text" id="license"></label><br>
-      <label>Today's Date: <input type="text" id="ttl"></label><br>
+      <label>Full Name: <input type="text" id="fullname" placeholder="Example: Christoper Bione"></label><br>
+      <label>Gender: <input type="text" id="gender" placeholder="Example: Male/Female"></label><br>
+      <label>Date of Birth: <input type="text" id="dob" placeholder="Example: 12/12/2000"></label><br>
+      <label>Residential Address: <input type="text" id="address" placeholder="Example: Idlewood, Richman, Temple, Etc"></label><br>
+      <label>Contact Number: <input type="text" id="phone" placeholder="Example: 12345"></label><br>
+      <label>License Image Link: <input type="text" id="license" placeholder="Only link imgur or upload.ee"></label><br>
+      <label>Today's Date: <input type="text" id="ttl" placeholder="Enter the date when you make a license"></label><br>
       <button type="button" onclick="generateApplicant()">Generate BBCode</button>
     `;
   } else if (template === "certificate") {
