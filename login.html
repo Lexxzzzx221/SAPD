@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - BBCode Generator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container" style="max-width:400px; text-align:center;">
+    <h1>🔒 Secure Login</h1>
+    <p>Masukkan password untuk melanjutkan</p>
+    <form id="loginForm">
+      <label>Password</label>
+      <input type="password" id="password" required>
+      <br><br>
+      <button type="submit" class="btn-main">Login</button>
+    </form>
+  </div>
+
+  <script>
+    const correctPassword = "LEULEGASIMABAR"; // 🔑 Ubah password disini
+
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const inputPass = document.getElementById("password").value;
+
+      if (inputPass === correctPassword) {
+        // simpan password hanya di sessionStorage
+        sessionStorage.setItem("authenticated", "true");
+        window.location.href = "sapd.html";
+      } else {
+        alert("❌ Password salah!");
+      }
+    });
+  </script>
+</body>
+</html>

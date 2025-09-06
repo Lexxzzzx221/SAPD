@@ -7,6 +7,15 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <script>
+    if (sessionStorage.getItem("authenticated") !== "true") {
+        window.location.href = "login.html";
+    } else {
+        // langsung hapus setelah dipakai, jadi setiap refresh harus login lagi
+        sessionStorage.removeItem("authenticated");
+    }
+    </script>
+
   <!-- Navbar -->
   <nav class="navbar">
     <a href="index.html" class="nav-link" id="nav-home">Home</a>
@@ -20,15 +29,15 @@
 
     <div class="template-list">
       <div class="template-card">
-        <h3>📑 LICENSES HEAVY/LORY/LUMBER</h3>
-        <p>Formulir Lisensi.</p>
-        <a href="form.html?template=applicant" class="btn-main">Gunakan Template</a>
+        <h3>Reply Accepted</h3>
+        <p>Reply Accepted.</p>
+        <a href="form.html?template=Accept" class="btn-main">Gunakan Template</a>
       </div>
 
       <div class="template-card">
-        <h3>📝 Certificate of Good Conduct</h3>
-        <p>Formulir Certificate of Good Conduct.</p>
-        <a href="form.html?template=certificate" class="btn-main">Gunakan Template</a>
+        <h3>Reply Pending</h3>
+        <p>Reply Pending.</p>
+        <a href="form.html?template=Pending" class="btn-main">Gunakan Template</a>
       </div>
     </div>
   </div>

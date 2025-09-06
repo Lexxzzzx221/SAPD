@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("nav-home")?.classList.add("active");
   } else if (path.includes("list.html")) {
     document.getElementById("nav-list")?.classList.add("active");
+  } else if (path.includes("sapd.html")) {
+    document.getElementById("nav-list")?.classList.add("active");
   }
 
   // Cek halaman form
@@ -16,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!formContainer) return;
 
   if (template === "applicant") {
-    title.textContent = "Applicant Form Generator";
+    title.textContent = "LICENSES HEAVY/LORY/LUMBER";
     formContainer.innerHTML = `
       <label>Full Name: <input type="text" id="fullname"></label><br>
       <label>Gender: <input type="text" id="gender"></label><br>
@@ -24,10 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
       <label>Residential Address: <input type="text" id="address"></label><br>
       <label>Contact Number: <input type="text" id="phone"></label><br>
       <label>License Image Link: <input type="text" id="license"></label><br>
+      <label>Today's Date: <input type="text" id="ttl"></label><br>
       <button type="button" onclick="generateApplicant()">Generate BBCode</button>
     `;
   } else if (template === "certificate") {
-    title.textContent = "Certificate Form Generator";
+    title.textContent = "Certificate of Good Conduct";
     formContainer.innerHTML = `
       <label>Full Name: <input type="text" id="fullname"></label><br>
       <label>Date of Birth: <input type="text" id="dob"></label><br>
@@ -39,9 +42,31 @@ document.addEventListener("DOMContentLoaded", () => {
       <label>Occupation: <input type="text" id="occupation"></label><br>
       <label>Purpose: <input type="text" id="purpose"></label><br>
       <label>Your Name (Signature): <input type="text" id="signame"></label><br>
+      <label>Today's Date: <input type="text" id="ttl"></label><br>
       <button type="button" onclick="generateCertificate()">Generate BBCode</button>
     `;
-  }
+  } else if (template === "Accept") {
+    title.textContent = "Respon Accept";
+    formContainer.innerHTML = `
+      <label>Full Name User: <input type="text" id="name"></label><br>
+      <label>Mr/Ms: <input type="text" id="mrorms"></label><br>
+      <label>Your Signature: <input type="text" id="signature"></label><br>
+      <label>Your Rank: <input type="text" id="rank"></label><br>
+      <label>Your Name: <input type="text" id="name1"></label><br>
+      <button type="button" onclick="generateAccept()">Generate BBCode</button>
+    `;
+  }  else if (template === "Pending") {
+    title.textContent = "Respon Pending";
+    formContainer.innerHTML = `
+      <label>Full Name User: <input type="text" id="name"></label><br>
+      <label>Mr/Ms: <input type="text" id="mrorms"></label><br>
+      <label>Reasons:</label><textarea id="reasons"></textarea><br>
+      <label>Your Signature: <input type="text" id="signature"></label><br>
+      <label>Your Rank: <input type="text" id="rank"></label><br>
+      <label>Your Name: <input type="text" id="name1"></label><br>
+      <button type="button" onclick="generatePending()">Generate BBCode</button>
+    `;
+  } 
 });
 
 // Fungsi generate applicant
@@ -52,6 +77,7 @@ function generateApplicant() {
   const address = document.getElementById("address").value;
   const phone = document.getElementById("phone").value;
   const license = document.getElementById("license").value;
+  const ttl = document.getElementById("ttl").value;
 
   document.getElementById("bbcode-output").value = `[divbox=white][center][img-resize=140]https://www.upload.ee/image/18558723/LICENSING_ENFORCEMENT_UNIT.png[/img-resize][/center]
 
@@ -88,7 +114,7 @@ I fully understand and accept that any violation of Trucking License Regulations
 [b]Revocation of my license, truck impoundment, fines, and/or legal consequences.[/b]  
 I agree to abide by all traffic laws and regulations as stated by the authorities and will uphold responsible trucking conduct at all times.[/quote]
 
-Los Santos, [b]DD/MMM/YYYY[/b]  
+Los Santos, ${ttl}  
 
 [i]${name}[/i]
 [/divbox]`;
@@ -106,6 +132,7 @@ function generateCertificate() {
   const occupation = document.getElementById("occupation").value;
   const purpose = document.getElementById("purpose").value;
   const signame = document.getElementById("signame").value;
+  const ttl = document.getElementById("ttl").value;
 
   document.getElementById("bbcode-output").value = `[divbox=white]
 [divbox=black][color=white][center]PERSONAL INFORMATION[/center][/color][/divbox]
@@ -155,10 +182,73 @@ Saya, ${name}, juga menyetujui bahwa jika saya [b]MASIH[/b] menggunakan [i]666 /
 [quote]I, ${name}, have read and understood the [url=]GCLU Hours[/url] page and acknowledge the designated appointment times.  
 I, ${name}, also agree that if I [b]STILL[/b] use [i]666 / 911[/i] to ask about something already explained in the GCLU Hours, my form will be [b]DENIED immediately[/b].[/quote][/list]  
 
-Los Santos, DD/MMM/YYYY  
+Los Santos, ${ttl}
 [u]${signame}[/u]  
 [/divbox]`;
 }
+
+// Fungsi generate Pending
+function generateAccept() {
+  const name = document.getElementById("name").value;
+  const mrorms = document.getElementById("mrorms").value;
+  const signature = document.getElementById("signature").value;
+  const rank = document.getElementById("rank").value;
+  const name1 = document.getElementById("name1").value;
+
+  document.getElementById("bbcode-output").value = `[divbox=white][center][img-resize=193]https://i.imgur.com/HfiJgbV.png[/img-resize]  [img-resize=200]https://i.imgur.com/gEdaiX7.png[/img-resize][/center]
+[center][size=150][b]Compliance & Development Bureau - Regulatory Licensing 
+& Enforcement Unit Division[/b][/size][/center]
+[hr]
+[divbox=#0000BF][center][size=100][b][color=#FFFFFF]Trucking License[/color][/b][/size][/center][/divbox]
+
+Dear ${mrorms} ${name},
+
+We have reviewed your application and records, and after much consideration, we would like to inform you that your application has been [b][color=#00BF00]ACCEPTED[/color][/b]. However, this is not the final step. You are required to pay the administration fee in advance by visiting one of our head offices when we are [url=https://sapd.legacyrealityproject.com/viewtopic.php?p=184#p184]available[/url].
+
+[b]Note(s):[/b]
+[list]
+[*]You have 7 days to complete the administration. [url=https://sapd.legacyrealityproject.com/viewtopic.php?p=184#p184]RLE Hours[/url].[/list]
+
+
+Sincerely,
+[img]${signature}[/img]
+[b]${rank}[/b], ${name1}[/divbox]`;
+}
+
+// Fungsi generate Pending
+function generatePending() {
+  const name = document.getElementById("name").value;
+  const mrorms = document.getElementById("mrorms").value;
+  const reasonsInput = document.getElementById("reasons").value;
+  const signature = document.getElementById("signature").value;
+  const rank = document.getElementById("rank").value;
+  const name1 = document.getElementById("name1").value;
+  
+  const reasons = formatReasons(reasonsInput);
+
+  document.getElementById("bbcode-output").value = `[divbox=white][center][img-resize=193]https://i.imgur.com/HfiJgbV.png[/img-resize]  [img-resize=200]https://i.imgur.com/gEdaiX7.png[/img-resize][/center]
+[center][size=150][b]Compliance & Development Bureau - Regulatory Licensing 
+& Enforcement Unit Division[/b][/size][/center]
+[hr]
+[divbox=#0000BF][center][size=100][b][color=#FFFFFF]Trucking License[/color][/b][/size][/center][/divbox]
+
+Dear ${mrorms} ${name},
+
+We have received your application and after further review, and after much consideration, we would like to inform you that your application has entered the [b][color=#FF8000]PENDING[/color][/b] stage for the following reasons:
+
+[b]Reason(s):[/b]
+${reasons}
+
+[b]Note(s):[/b]
+[list]
+[*]You have 7 days to correct this
+[/list]
+
+Sincerely,
+[img]${signature}[/img]
+[b]${rank}[/b], ${name1}[/divbox]`;
+}
+
 
 function copyOutput() {
   let textarea = document.getElementById("bbcode-output");
@@ -166,4 +256,15 @@ function copyOutput() {
   textarea.setSelectionRange(0, 99999);
   document.execCommand("copy");
   alert("✅ BBCode berhasil disalin!");
+}
+
+function formatReasons(inputText) {
+  return "[list]\n" + 
+    inputText
+      .split("\n")                   // pecah per baris
+      .map(r => r.trim())            // hapus spasi depan/belakang
+      .filter(r => r.length > 0)     // buang baris kosong
+      .map(r => "[*] " + r)          // tambahkan bullet BBCode
+      .join("\n") + 
+    "\n[/list]";
 }
